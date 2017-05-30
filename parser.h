@@ -5,12 +5,15 @@
 
 using namespace std;
 
-void parsingProcess(string, string, vector<map<string, string> >&, map<string ,map<string, vector<int> > >&);
-void setDataTable(string, vector<string>&, vector<map<string, string> >&);
-void setAttrInfo(string, vector<string>&, vector<vector<string> >&);
+void parsingProcess(string, string, vector<vector<string> >&, vector<map<string, vector<int> > >&, int&, vector<int>&);
+void setDataAndAttrInfoTable(string, vector<string>&, vector<vector<string> >&, vector<map<string, vector<int> > > &, vector<int>&);
+void setAttrInfo(string, vector<vector<string> >&, int&, vector<int>&);
 vector<string> splitWithSpace(const string&);
 void splitWithDelim(const string&, string,vector<string>&);
+bool isContiAttr(int, vector<int>&);
+void initAttrInfoTable(vector<map<string, vector<int> > >&, int);
 
 
 // DEBUG usage .
-void DEBUG_showDataTable(vector< map<string, string> >&, vector<string>&);
+void DEBUG_showDataTable(vector<vector<string> >&, int);
+void DEBUG_showAttrInfoTable(vector<map<string, vector<int> > >&);

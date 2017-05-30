@@ -6,16 +6,31 @@
 
 using namespace std;
 
+#include "parser.h"
 
-void DEBUG_showDataTable(vector< map<string, string> > &dataTable, vector<string> &attrTable){
+
+void DEBUG_showDataTable(vector<vector<string> > &dataTable, int attributeAmount){
 	for(int i = 0 ; i < dataTable.size() ; i ++){
-		for(int j = 0 ; j < attrTable.size() ; j ++){
-			cout << dataTable[i][attrTable[j]] << " ";
+		for(int j = 0 ; j < attributeAmount ; j ++){
+			cout << dataTable[i][j] << " ";
 		}
 		cout << endl;
 	}
 }
 
+void DEBUG_showAttrInfoTable(vector<map<string, vector<int> > > &attrInfoTable){
+	cout << "Yo" << endl;
+	for(int i = 0 ; i < attrInfoTable.size() ; i ++){
+		map<string, vector<int> >::iterator it = attrInfoTable[i].begin();
+		while(it != attrInfoTable[i].end()){
+			cout << it->first << endl;
+			for(int j = 0 ; j < (it->second).size() ; j ++)
+				cout << (it->second)[j] << " ";
+			cout << endl;
+			it ++;
+		}
+	}
+}
 
 void splitWithDelim(const string &s, string delim,vector<string> &tokens)
 {
@@ -36,13 +51,35 @@ vector<string> splitWithSpace(const string &source)
     return vec;
 }
 
-void setAttrInfo(string nameFile, vector<string> &attrTable, vector<vector<string> > &attrValueTable)
+bool isContiAttr(int index, vector<int> &contiAttributeIndex){
+	for(int i = 0 ; i < contiAttributeIndex.size() ; i ++){
+		if(index == contiAttributeIndex[i])
+			return true;
+	}
+
+	return false;
+}
+
+void initAttrInfoTable(vector<map<string, vector<int> > > &attrInfoTable, int attributeAmount){
+	map<string, vector<int> > temp;
+	vector<int> t;
+	t.push_back(-1);
+	temp["initial"] = t;
+
+	for(int i = 0 ; i < attributeAmount ; i ++){
+		attrInfoTable.push_back(temp);
+	}
+}
+
+void setAttrInfo(string nameFile, vector<vector<string> > &attrValueTable, int &attributeAmount, vector<int> &contiAttributeIndex)
 {
 	ifstream fs(nameFile);
 
 	string line;
 	vector<string> classes;
 	int lineCount = 0 ;
+	int tempAttrAmount = 0;
+	
 
 	while(getline(fs, line))
 	{
@@ -63,12 +100,14 @@ void setAttrInfo(string nameFile, vector<string> &attrTable, vector<vector<strin
 			lineCount++;
 		}
 		else{
+			tempAttrAmount ++ ;
+
+			if(line.find("continuous") != std::string::npos)
+				contiAttributeIndex.push_back(tempAttrAmount - 1);
+
 			// split by ':' .
 			vector<string> tokens;
 			splitWithDelim(line,":",tokens);
-
-			// attr name .
-			attrTable.push_back(tokens[0]);
 
 			// split value's tokens by space .
 			vector<string> valueTokens;
@@ -84,48 +123,56 @@ void setAttrInfo(string nameFile, vector<string> &attrTable, vector<vector<strin
 	}
 
 	// push Class to be last attr .
-	attrTable.push_back("Class");
 	attrValueTable.push_back(classes);
+	attributeAmount = tempAttrAmount + 1; // add 'Class' attribute .
 
 	fs.close();
 }
 
-void setDataTable(string dataFile,vector<string> &attrTable,vector< map<string, string> > &dataTable)
+void setDataAndAttrInfoTable(string dataFile, vector<vector<string> > &dataTable, vector<map<string, vector<int> > > &attrInfoTable,vector<int> &contiAttributeIndex)
 {
 	ifstream fs(dataFile);
 
 	string line;
+	int count = 0;
 
 	while(getline(fs, line))
 	{
 		vector<string> tokens ;
 		splitWithDelim(line,",",tokens);
 
-		map<string, string> instance;
-		for(int i = 0 ; i < tokens.size() ; i ++)
-			instance[attrTable[i]] = tokens[i];
+		vector<string> instance;
+		for(int i = 0 ; i < tokens.size() ; i ++){
+			instance.push_back(tokens[i]);
+			
+			if(!isContiAttr(i,contiAttributeIndex))
+				attrInfoTable[i][tokens[i]].push_back(count);
+		}
 		
 		dataTable.push_back(instance);
+		count ++;
 	}
 
 	fs.close();
 
 }
 
-void parsingProcess(string dataFile,string nameFile,vector< map<string, string> > &dataTable, map<string ,map<string, vector<int> > > &attrInfoTable)
+void parsingProcess(string dataFile,string nameFile,vector<vector<string> > &dataTable, vector<map<string, vector<int> > > &attrInfoTable, int &attributeAmount, vector<int> &contiAttributeIndex)
 {
-	vector<string> attrTable;
 	vector<vector<string> > attrValueTable;
-	setAttrInfo(nameFile,attrTable,attrValueTable);
+	setAttrInfo(nameFile,attrValueTable,attributeAmount, contiAttributeIndex);
 
 	// for(int i = 0 ; i < attrTable.size() ; i ++){
 	//	cout << attrTable[i] << " : "<< endl;
 	//	for(int j = 0 ; j < attrValueTable[i].size() ; j ++)
 	//		cout << attrValueTable[i][j] << endl;
 	// }
+	// 
 	
-	setDataTable(dataFile, attrTable, dataTable);
-	// DEBUG_showDataTable(dataTable,attrTable);
+	initAttrInfoTable(attrInfoTable, attributeAmount);
+	setDataAndAttrInfoTable(dataFile, dataTable, attrInfoTable, contiAttributeIndex);
+	// DEBUG_showDataTable(dataTable,attributeAmount);
+	// DEBUG_showAttrInfoTable(attrInfoTable);
 }
 
 
