@@ -15,13 +15,15 @@ vector<vector<string> > dataTable;
 vector<map<string, vector<int> > > attrInfoTable;
 vector<int> contiAttributeIndex;
 
-vector<vector<string> > foldedTrainingData[10];
-vector<vector<string> > foldedTestingData[10];
+vector<int> foldedTrainingData[10];	// data's index .
+vector<int> foldedTestingData[10];	// data's index .
+
+const string dataSetName = "car";
 
 int main(){
 	
-	parsingProcess("./dataset/car.data", "./dataset/car.names", dataTable, attrInfoTable, attributeAmount, contiAttributeIndex);
-	cvProcess(dataTable, attrInfoTable, foldedTrainingData, foldedTestingData);
+	parsingProcess("./dataset/"+ dataSetName +".data", "./dataset/"+ dataSetName +".names", dataTable, attrInfoTable, attributeAmount, contiAttributeIndex);
+	cvProcess(dataTable, attrInfoTable, foldedTrainingData, foldedTestingData, dataSetName);
 
 	return 0;
 }
