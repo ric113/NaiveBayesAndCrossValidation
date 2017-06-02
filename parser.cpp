@@ -19,7 +19,6 @@ void DEBUG_showDataTable(vector<vector<string> > &dataTable, int attributeAmount
 }
 
 void DEBUG_showAttrInfoTable(vector<map<string, vector<int> > > &attrInfoTable){
-	cout << "Yo" << endl;
 	for(int i = 0 ; i < attrInfoTable.size() ; i ++){
 		map<string, vector<int> >::iterator it = attrInfoTable[i].begin();
 		while(it != attrInfoTable[i].end()){
@@ -31,6 +30,18 @@ void DEBUG_showAttrInfoTable(vector<map<string, vector<int> > > &attrInfoTable){
 		}
 	}
 }
+
+string& trim(std::string &s)   
+{  
+    if (s.empty())   
+    {  
+        return s;  
+    }  
+  
+    s.erase(0,s.find_first_not_of(" "));  
+    s.erase(s.find_last_not_of(" ") + 1);  
+    return s;  
+}  
 
 void splitWithDelim(const string &s, string delim,vector<string> &tokens)
 {
@@ -83,13 +94,17 @@ void setAttrInfo(string nameFile, vector<vector<string> > &attrValueTable, int &
 
 	while(getline(fs, line))
 	{
-		// cout << line << endl;
 		
+		// trim '.' .
+		if (line[line.size()-1] == '.' || line[line.size()-1] == '\r')
+			line = line.substr(0,line.size()-1);
+
 		if(lineCount == 0){
 			// Class Attr. Line .
-			vector<string> tokens = splitWithSpace(line);
+			vector<string> tokens;
+			splitWithDelim(line,",",tokens);
 			for(int i = 0 ; i < tokens.size() ; i ++){
-				classes.push_back(tokens[i].substr(0,tokens[i].size()-1));
+				classes.push_back( trim(tokens[i]) );
 				// cout << classes[i] << endl;
 			}
 
@@ -100,10 +115,18 @@ void setAttrInfo(string nameFile, vector<vector<string> > &attrValueTable, int &
 			lineCount++;
 		}
 		else{
+
+
+			trim(line);
+			if(line.size() == 0)
+				break;
+
 			tempAttrAmount ++ ;
 
 			if(line.find("continuous") != std::string::npos)
 				contiAttributeIndex.push_back(tempAttrAmount - 1);
+
+			// cout <<line.size()<< endl;
 
 			// split by ':' .
 			vector<string> tokens;
@@ -111,10 +134,10 @@ void setAttrInfo(string nameFile, vector<vector<string> > &attrValueTable, int &
 
 			// split value's tokens by space .
 			vector<string> valueTokens;
-			valueTokens = splitWithSpace(tokens[1]);
+			splitWithDelim(tokens[1],",",valueTokens);
 
 			for(int i = 0 ; i < valueTokens.size() ; i ++)
-				valueTokens[i] = valueTokens[i].substr(0,valueTokens[i].size()-1);
+				valueTokens[i] = trim(valueTokens[i]);
 
 			attrValueTable.push_back(valueTokens);
 
@@ -143,7 +166,14 @@ void setDataAndAttrInfoTable(string dataFile, vector<vector<string> > &dataTable
 
 		vector<string> instance;
 		for(int i = 0 ; i < tokens.size() ; i ++){
-			instance.push_back(tokens[i]);
+
+			// remove \r in the back .
+			if(i == tokens.size() - 1){
+				if(tokens[i][tokens[i].size()-1] == '\r')
+					tokens[i] = tokens[i].substr(0,tokens[i].size()-1);
+			}
+
+			instance.push_back(trim(tokens[i]));
 			
 			if(!isContiAttr(i,contiAttributeIndex))
 				attrInfoTable[i][tokens[i]].push_back(count);
@@ -157,9 +187,9 @@ void setDataAndAttrInfoTable(string dataFile, vector<vector<string> > &dataTable
 
 }
 
-void parsingProcess(string dataFile,string nameFile,vector<vector<string> > &dataTable, vector<map<string, vector<int> > > &attrInfoTable, int &attributeAmount, vector<int> &contiAttributeIndex)
+void parsingProcess(string dataFile,string nameFile,vector<vector<string> > &dataTable, vector<map<string, vector<int> > > &attrInfoTable, int &attributeAmount, vector<int> &contiAttributeIndex,vector<vector<string> > &attrValueTable)
 {
-	vector<vector<string> > attrValueTable;
+	
 	setAttrInfo(nameFile,attrValueTable,attributeAmount, contiAttributeIndex);
 
 	// for(int i = 0 ; i < attrTable.size() ; i ++){
@@ -168,10 +198,24 @@ void parsingProcess(string dataFile,string nameFile,vector<vector<string> > &dat
 	//		cout << attrValueTable[i][j] << endl;
 	// }
 	// 
+	// 
+	
+	/*
+	for(int i = 0 ; i < attrValueTable.size() ; i ++){
+		for(int j = 0 ; j < attrValueTable[i].size() ; j ++){
+			cout << attrValueTable[i][j] << " ";
+		}
+		cout << endl;
+	}
+	*/
+	
 	
 	initAttrInfoTable(attrInfoTable, attributeAmount);
 	setDataAndAttrInfoTable(dataFile, dataTable, attrInfoTable, contiAttributeIndex);
-	// DEBUG_showDataTable(dataTable,attributeAmount);
+
+
+
+	//DEBUG_showDataTable(dataTable,attributeAmount);
 	// DEBUG_showAttrInfoTable(attrInfoTable);
 }
 

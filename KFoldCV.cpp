@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void setFolds(vector<vector<string> > &dataTable,vector<map<string, vector<int> > > &attrInfoTable, vector<int>* foldedTrainingData, vector<int>* foldedTestingData,map<string,int> &classAmountPerFold, string dataSetName)
+void setFolds(vector<vector<string> > &dataTable,vector<map<string, vector<int> > > &attrInfoTable, vector<vector<string> >* foldedTrainingData, vector<vector<string> >* foldedTestingData,map<string,int> &classAmountPerFold, string dataSetName)
 {
 	int dataSize =  dataTable.size();
 	int testDataSize = dataSize / FOLD_NUM ;
@@ -42,14 +42,22 @@ void setFolds(vector<vector<string> > &dataTable,vector<map<string, vector<int> 
 
 					string line = dataTable[dataIndex][0];
 
+					vector<string> instance;
+					instance.push_back(dataTable[dataIndex][0]);
+
 					for(int k = 1 ; k < dataTable[dataIndex].size() ; k ++){
 						line += "," + dataTable[dataIndex][k];
+						instance.push_back(dataTable[dataIndex][k]);
 					}
-
-					if( currentPickStartedIndex <= j && j < currentPickStartedIndex + currentPickAmount)
+					
+					if( currentPickStartedIndex <= j && j < currentPickStartedIndex + currentPickAmount){ 	// Testing
 						ofs_test << line << endl;
-					else
+						foldedTestingData[i].push_back(instance);
+					}
+					else{	// Training
 						ofs_train << line << endl;
+						foldedTrainingData[i].push_back(instance);
+					}
 					
 				}
 
@@ -95,7 +103,7 @@ void calculateClassAmountPerFold(map<string,int> &classAmountPerFold,vector<map<
 	*/
 }
 
-void cvProcess(vector<vector<string> > &dataTable, vector<map<string, vector<int> > > &attrInfoTable, vector<int>* foldedTrainingData, vector<int>* foldedTestingData, string dataSetName)
+void cvProcess(vector<vector<string> > &dataTable, vector<map<string, vector<int> > > &attrInfoTable, vector<vector<string> >* foldedTrainingData, vector<vector<string> >* foldedTestingData, string dataSetName)
 {
 	map<string,int> classAmountPerFold ;
 	calculateClassAmountPerFold(classAmountPerFold,attrInfoTable,dataTable.size());
