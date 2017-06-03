@@ -61,15 +61,12 @@ bool isContiAttr(int index){
 	return false;
 }
 
-void initAttrInfoTable(){
-	// 在每個attrInfoTable元素中以一個dummy field來初始化 .
-	map<string, vector<int> > temp;
-	vector<int> t;
-	t.push_back(-1);
-	temp["initial"] = t;
+void initClassInfoTable(){
+	vector<string> classes = attrValueTable[attrValueTable.size()-1];
 
-	for(int i = 0 ; i < attributeAmount ; i ++){
-		attrInfoTable.push_back(temp);
+	for(int i = 0 ; i < classes.size() ; i ++){
+		vector<int> temp;
+		classInformation[classes[i]] = temp;
 	}
 }
 
@@ -162,9 +159,10 @@ void setDataAndAttrInfoTable(string dataFile)
 
 			instance.push_back(trim(tokens[i]));
 			
-			if(!isContiAttr(i))
-				attrInfoTable[i][tokens[i]].push_back(count);
 		}
+
+		// set class information .
+		classInformation[tokens[tokens.size()-1]].push_back(count);
 		
 		dataTable.push_back(instance);
 		count ++;
@@ -180,7 +178,7 @@ void parsingProcess(string dataSetName)
 	string nameFile =  "./dataset/"+ dataSetName +".names";	
 	setAttrValueTable(nameFile);
 	
-	initAttrInfoTable();
+	initClassInfoTable();
 	setDataAndAttrInfoTable(dataFile);
 
 	//DEBUG_showDataTable(dataTable,attributeAmount);

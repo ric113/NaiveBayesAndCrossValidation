@@ -17,8 +17,6 @@ void setFolds(map<string,int> &classAmountPerFold, string dataSetName)
 	int dataSize =  dataTable.size();
 	int testDataSize = dataSize / FOLD_NUM ;
 
-	map<string, vector<int> > classValueInfo = attrInfoTable[attrInfoTable.size()-1];
-
 	for(int i = 0 ; i < FOLD_NUM ;i ++){
 		string testFileName = OUTPUT_DIR + dataSetName + "_cv" + to_string(i+1) + ".test";
 		string trainFileName = OUTPUT_DIR + dataSetName + "_cv" + to_string(i+1) + ".data";
@@ -31,7 +29,7 @@ void setFolds(map<string,int> &classAmountPerFold, string dataSetName)
 
 			string currentClass = it->first;
 			int currentPickAmount = it->second;
-			vector<int> currentIndexList = classValueInfo[currentClass];
+			vector<int> currentIndexList = classInformation[currentClass];
 			int currentPickStartedIndex = i * currentPickAmount;
 
 			// if it's not dummy feild .
@@ -91,13 +89,10 @@ void calculateClassAmountPerFold(map<string,int> &classAmountPerFold,int dataSiz
 {
 
 	int testDataSize = dataSize / FOLD_NUM ;
-
-	map<string, vector<int> > classValueInfo = attrInfoTable[attrInfoTable.size()-1];
-
-	map<string, vector<int> >::iterator it = classValueInfo.begin();
+	map<string, vector<int> >::iterator it = classInformation.begin();
 	double ratio;
 
-	while(it != classValueInfo.end()){
+	while(it != classInformation.end()){
 		vector<int> indices = it->second;
 		ratio = (double)indices.size()/(double)dataSize;
 
