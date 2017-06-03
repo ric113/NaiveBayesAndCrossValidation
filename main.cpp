@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 
+
 #include "parser.h"
 #include "KFoldCV.h"
 #include "naiveBayesian.h"
@@ -10,26 +11,28 @@
 using namespace std;
 
 // Global Variables .
-int attributeAmount ; // include Class .
-vector<vector<string> > dataTable;
-vector<vector<string> > attrValueTable;
-vector<map<string, vector<int> > > attrInfoTable;
-vector<int> contiAttributeIndex;
+int attributeAmount ;	// 包含Class這個欄位 . 
+vector<vector<string> > dataTable;	// A 2-D table .
+vector<vector<string> > attrValueTable;		// 依照Column順序, 紀錄各Attri. 有的value .
+vector<map<string, vector<int> > > attrInfoTable;	// 依照Column順序, 紀錄各Attri . 的value存在在第幾筆Data .
+vector<int> contiAttributeIndex;	// 紀錄Conti. attri. 在第幾Column .
 
-vector<vector<string> > foldedTrainingData[10];	// data's index .
-vector<vector<string> > foldedTestingData[10];	// data's index .
+vector<vector<string> > foldedTrainingData[10];
+vector<vector<string> > foldedTestingData[10];
 
-const string dataSetName = "winequality";
-
-int main(){
+int main(int argc, const char **argv){
 	
-	parsingProcess("./dataset/"+ dataSetName +".data", "./dataset/"+ dataSetName +".names", dataTable, attrInfoTable, attributeAmount, contiAttributeIndex, attrValueTable);
-	// cout << "Yo" << endl;
-	cvProcess(dataTable, attrInfoTable, foldedTrainingData, foldedTestingData, dataSetName);
-	// cout << "Yo" << endl;
-	NBProcess(foldedTrainingData, 
-		foldedTestingData, 
-		attrValueTable, 
-		contiAttributeIndex);
+	if(argc != 2){
+		cout << "Usage : ./main [dataset name without extension] " << endl;
+		return 0;
+	}
+
+	string dataSetName = argv[1];
+
+	parsingProcess(dataSetName);
+	cvProcess(dataSetName);
+	NBProcess();
+
 	return 0;
+	
 }

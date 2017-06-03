@@ -4,6 +4,12 @@
 
 using namespace std;
 
-void cvProcess(vector<vector<string> >&, vector<map<string, vector<int> > >&, vector<vector<string> >*, vector<vector<string> >*, string);
-void calculateClassAmountPerFold(map<string,int>&, vector<map<string, vector<int> > >&, int);
-void setFolds(vector<vector<string> >&, vector<map<string, vector<int> > >&, vector<vector<string> >*, vector<vector<string> >*, map<string,int>&, string);
+void cvProcess(string);
+// 計算各個Class在每個Flod所需要的個數 , Keep在一個map中 .
+void calculateClassAmountPerFold(map<string,int>&, int);
+void setFolds(map<string,int>&, string);
+
+extern vector<vector<string> > dataTable;
+extern vector<map<string, vector<int> > > attrInfoTable;
+extern vector<vector<string> > foldedTrainingData[10];	
+extern vector<vector<string> > foldedTestingData[10];	

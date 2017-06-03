@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void setFolds(vector<vector<string> > &dataTable,vector<map<string, vector<int> > > &attrInfoTable, vector<vector<string> >* foldedTrainingData, vector<vector<string> >* foldedTestingData,map<string,int> &classAmountPerFold, string dataSetName)
+void setFolds(map<string,int> &classAmountPerFold, string dataSetName)
 {
 	int dataSize =  dataTable.size();
 	int testDataSize = dataSize / FOLD_NUM ;
@@ -34,7 +34,7 @@ void setFolds(vector<vector<string> > &dataTable,vector<map<string, vector<int> 
 			vector<int> currentIndexList = classValueInfo[currentClass];
 			int currentPickStartedIndex = i * currentPickAmount;
 
-			// dummy feild .
+			// if it's not dummy feild .
 			if(currentClass != "initial"){
 
 				for(int j = 0 ; j < currentIndexList.size() ; j ++){
@@ -67,14 +67,27 @@ void setFolds(vector<vector<string> > &dataTable,vector<map<string, vector<int> 
 			it ++;
 		}
 
+		// ouput name file .
+		string nameFile =  "./dataset/"+ dataSetName +".names";	
+		ifstream ifs_name(nameFile);
+		string ouputNamefile = OUTPUT_DIR + dataSetName + "_cv" + to_string(i+1) + ".names";
+		ofstream ofs_name(ouputNamefile, ofstream::out);
+		string line;
+
+		while(getline(ifs_name, line))
+		{
+			ofs_name << line << endl;;
+		}
+
+		ifs_name.close();
+		ofs_name.close();
 		ofs_test.close();
 		ofs_train.close();
 	}
 
 }
 
-
-void calculateClassAmountPerFold(map<string,int> &classAmountPerFold,vector<map<string, vector<int> > >  &attrInfoTable,int dataSize)
+void calculateClassAmountPerFold(map<string,int> &classAmountPerFold,int dataSize)
 {
 
 	int testDataSize = dataSize / FOLD_NUM ;
@@ -92,21 +105,11 @@ void calculateClassAmountPerFold(map<string,int> &classAmountPerFold,vector<map<
 
 		it ++;
 	}
-
-	/*
-	cout << testDataSize << endl;
-	map<string, int>::iterator itt = classAmountPerFold.begin();
-	while(itt != classAmountPerFold.end()){
-		cout << itt->first << " " << itt->second << endl;
-		itt++;
-	}
-	*/
 }
 
-void cvProcess(vector<vector<string> > &dataTable, vector<map<string, vector<int> > > &attrInfoTable, vector<vector<string> >* foldedTrainingData, vector<vector<string> >* foldedTestingData, string dataSetName)
+void cvProcess(string dataSetName)
 {
-	map<string,int> classAmountPerFold ;
-	calculateClassAmountPerFold(classAmountPerFold,attrInfoTable,dataTable.size());
-	setFolds(dataTable,attrInfoTable,foldedTrainingData,foldedTestingData,classAmountPerFold,dataSetName);
-
+	map<string,int> classAmountPerFold ;	// 紀錄各個Class在每個fold要有的數量 .
+	calculateClassAmountPerFold(classAmountPerFold,dataTable.size());
+	setFolds(classAmountPerFold,dataSetName);
 }	

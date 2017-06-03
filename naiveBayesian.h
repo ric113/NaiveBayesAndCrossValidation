@@ -4,15 +4,10 @@
 
 using namespace std;
 
-void NBProcess(vector<vector<string> >*, 
-			   	vector<vector<string> >*, 
-			   	vector<vector<string> >&, 
-			   	vector<int>&);
+void NBProcess();
 
 void initProbabilityTables(vector<string>&,
-							vector<vector<string> >&,
 							vector<map<string, map<string, double> > >&,
-							vector<int>&,
 							int);
 
 void calculateProbailities(vector<map<string, map<string, double> > >&,
@@ -20,8 +15,6 @@ void calculateProbailities(vector<map<string, map<string, double> > >&,
 							map<string, double> &,
 							map<string, int>&,
 							vector<string>&,
-							vector<vector<string> >&,
-							vector<int>&,
 							map<int,vector<double> >&,
 							int);
 
@@ -29,13 +22,20 @@ void calculateClassesSize(map<string, int>&,
 							vector<string>&,
 							vector<vector<string> >&);
 
-void setContiAttrCutPoint(vector<int>&,
-							vector<vector<string> >&,
-							map<int,vector<double> >&,
+void collectContiAttrValue(vector<vector<string> >&, 
+							int,
+							map<int,vector<double> >&);
+
+void setContiAttrCutPoint(map<int,vector<double> >&,
 							map<int,vector<double> >&);
 
 string getContiSegment(int, 
 						string ,
 						map<int,vector<double> >&);
 
-vector<double> stringVecToDouble(vector<string>);
+
+
+extern vector<vector<string> > attrValueTable;
+extern vector<int> contiAttributeIndex;
+extern vector<vector<string> > foldedTrainingData[10];	
+extern vector<vector<string> > foldedTestingData[10];	
