@@ -14,7 +14,7 @@ using namespace std;
 int attributeAmount ;	// 包含Class這個欄位 . 
 vector<vector<string> > dataTable;	// A 2-D table .
 vector<vector<string> > attrValueTable;		// 依照Column順序, 紀錄各Attri. 有的value .
-map<string, vector<int> > classInformation;
+map<string, vector<int> > classInformation;	// 紀錄各個Class存在在哪些筆Instances內 .
 vector<int> contiAttributeIndex;	// 紀錄Conti. attri. 在第幾Column .
 
 vector<vector<string> > foldedTrainingData[10];

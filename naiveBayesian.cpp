@@ -2,6 +2,7 @@
 #include <map>
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 #include "naiveBayesian.h"
 #include "parser.h"			// usage of 'isConti() func.'
